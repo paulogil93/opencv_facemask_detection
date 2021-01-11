@@ -7,7 +7,6 @@ cap = cv2.VideoCapture(0)
 while True:
     _, img = cap.read()
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    gray = cv2.equalizeHist(gray)
     faces = face_cascade.detectMultiScale(gray, 1.1, 4)
 
     for (x, y, w, h) in faces:
