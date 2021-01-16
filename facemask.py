@@ -1,21 +1,24 @@
+from mtcnn import MTCNN
 import cv2
 
-face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-
-cap = cv2.VideoCapture(0)
+detector = MTCNN()
+capture = cv2.VideoCapture(0)
 
 while True:
-    _, img = cap.read()
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+    ret, frame = capture.read()
+    frame = cv2.resize(frame, (600,400))
+    boxes = detector.detect_faces(frame)
+    if boxes:
+        box = boxes[0]['box']
+        conf = boxes[0]['confidence']
+        x, y, w, h = box[0], box[1], box[2], box[3]
 
-    for (x, y, w, h) in faces:
-        cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+        if conf > 0.5:
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 255, 255), 1)
     
-    cv2.imshow('img', img)
-    k = cv2.waitKey(30) & 0xff
-
-    if k == 27:
+    cv2.imshow('Frame', frame)
+    if cv2.waitKey(25) and 0xFF == ord('q'):
         break
 
-cap.release()
+capture.release()
+cv2.destroyAllWindows()
